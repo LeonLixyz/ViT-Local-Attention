@@ -29,7 +29,17 @@ The attention masks for each variant are implemented in `masks.py`:
 - **All Neighbors Expansion**: `generate_2d_attention_mask_all_neighbors`
 - **1D Attention**: `generate_1d_attention_mask`
 
-## Model Details
+### Masks Visualization
+
+Different attention patterns explored in our experiments:
+
+![Attention Masks](masks/attention_masks.png)
+
+Visualization of attention masks with different neighborhood patterns and expansion factors. From left to right: expansion steps k=1, k=2, and k=3. From top to bottom: 1D all neighbors, 1D cardinal neighbors, 2D all neighbors, and 2D cardinal neighbors. White pixels indicate allowed attention connections between patches.
+
+## Experiment Details
+
+### Model Details
 
 We use a standard ViT architecture with default parameters:
 - Input image size: 224x224
@@ -41,6 +51,12 @@ We use a standard ViT architecture with default parameters:
 - Dropout: 0.1
 
 The only modification is in the attention mechanism, where we apply different local attention masks while keeping the core architecture unchanged.
+
+### Training Details
+
+We used cosine annealing learning rate scheduling with a peak learning rate of 0.0003 and 3% warmup steps. We trained
+all models for 50 epochs with batch size 64.
+
 
 ## Directory Structure
 
@@ -79,3 +95,28 @@ Use `plot_result.py` to generate plots for accuracy and loss:
 ```bash
 python plot_result.py --results_path experiments/cifar10
 ```
+
+## Results
+
+We benchmarked the performance of different attention patterns on CIFAR-10. We obtained all results with the training
+configuration mentioned in the [Experiment Details](#experiment-details) section.
+
+| Model Configuration | Test Accuracy |
+|-------------------|---------------|
+| 2D Cardinal (k=1) | 82.02% |
+| 2D Cardinal (k=2) | 81.78% |
+| 1D Cardinal (k=1) | 81.44% |
+| 2D Cardinal (k=3) | 81.26% |
+| 2D All Neighbors (k=1) | 81.21% |
+| 1D All Neighbors (k=1) | 81.15% |
+| 1D Cardinal (k=2) | 80.99% |
+| 1D Cardinal (k=3) | 80.86% |
+| 1D All Neighbors (k=2) | 80.32% |
+| 2D All Neighbors (k=2) | 80.25% |
+| 2D All Neighbors (k=3) | 79.08% |
+| 1D All Neighbors (k=3) | 78.53% |
+| Full Attention | 77.43% |
+
+The evaluation accuracy plot:
+![Evaluation Accuracy](plots/evaluation_accuracy.png)
+
